@@ -16,7 +16,8 @@ export interface Product {
   };
 }
 
-export type DesignElementType = 'image';
+export type DesignElementType = 'image' | 'shape';
+export type ShapeType = 'circle' | 'square' | 'line';
 
 export interface BaseDesignElement {
   id:string;
@@ -33,7 +34,14 @@ export interface ImageElement extends BaseDesignElement {
   src: string;
 }
 
-export type DesignElement = ImageElement;
+export interface ShapeElement extends BaseDesignElement {
+    type: 'shape';
+    shapeType: ShapeType;
+    fillColor: string;
+    strokeColor: string;
+}
+
+export type DesignElement = ImageElement | ShapeElement;
 
 export interface User {
   id: string;
@@ -50,6 +58,7 @@ export interface OrderItem {
   product: Product;
   design: Design;
   quantity: number;
+  previewImageUrl: string;
 }
 
 export interface Order {

@@ -11,6 +11,8 @@ interface AppContextType {
   login: (userId: string) => Promise<void>;
   logout: () => void;
   addToCart: (item: OrderItem) => void;
+  removeFromCart: (index: number) => void;
+  updateCartQuantity: (index: number, quantity: number) => void;
   clearCart: () => void;
   placeOrder: () => Promise<Order | null>;
 }
@@ -61,8 +63,21 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   };
 
   const addToCart = (item: OrderItem) => {
-    // For simplicity, we'll just add the new item. A real cart would handle merging quantities.
     setCart(prevCart => [...prevCart, item]);
+  };
+
+  const removeFromCart = (index: number) => {
+    setCart(prevCart => prevCart.filter((_, i) => i !== index));
+  };
+
+  const updateCartQuantity = (index: number, quantity: number) => {
+    if (quantity <= 0) {
+      removeFromCart(index);
+      return;
+    }
+    setCart(prevCart =>
+      prevCart.map((item, i) => (i === index ? { ...item, quantity } : item))
+    );
   };
   
   const clearCart = () => {
@@ -90,6 +105,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     login,
     logout,
     addToCart,
+    removeFromCart,
+    updateCartQuantity,
     clearCart,
     placeOrder,
   };

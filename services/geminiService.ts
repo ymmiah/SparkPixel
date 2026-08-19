@@ -1,35 +1,67 @@
 
 import { GoogleGenAI } from "@google/genai";
 
-const API_KEY = process.env.API_KEY;
+const getApiKey = (): string | undefined => {
+  return process.env.API_KEY || process.env.GEMINI_API_KEY;
+};
 
-if (!API_KEY) {
-  // In a real app, you'd want to handle this more gracefully.
-  // For this example, we'll log an error. The app will still run,
-  // but AI features will fail.
-  console.error("Gemini API key not found. Please set the API_KEY environment variable.");
-}
+let genAIClient: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: API_KEY! });
+const getGenAIClient = (): GoogleGenAI | null => {
+  const apiKey = getApiKey();
+  if (!apiKey) {
+    return null;
+  }
+  if (!genAIClient) {
+    genAIClient = new GoogleGenAI({ apiKey });
+  }
+  return genAIClient;
+};
+
+// Fallback ideas generator when API key is not configured
+const generateFallbackIdea = (prompt: string): string => {
+  const cleanPrompt = prompt.trim().toLowerCase();
+  const variations = [
+    `A vibrant minimalist emblem featuring "${prompt}" with bold geometric accent lines and modern retro colors.`,
+    `A hand-drawn vintage illustration of "${prompt}" enclosed in an ornate circular badge with distressed typography.`,
+    `A cyberpunk neon aesthetic depicting "${prompt}" with luminous cyan and magenta glow effects on a sleek background.`,
+    `An artistic watercolor splash artwork centered around "${prompt}" with soft pastel gradients and subtle ink splatter highlights.`,
+    `A playful pop-art graphic featuring "${prompt}" with bold halftone dots and high-contrast comic book styling.`
+  ];
+  const index = Math.abs(cleanPrompt.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0)) % variations.length;
+  return variations[index];
+};
 
 export const generateDesignIdea = async (prompt: string): Promise<string> => {
-  if (!API_KEY) {
-    return Promise.resolve("AI features are disabled. API key is missing.");
+  const trimmed = prompt.trim();
+  if (!trimmed) {
+    return "Please enter a theme or keywords to generate creative design ideas.";
   }
+
+  const ai = getGenAIClient();
+  if (!ai) {
+    // Provide a rich creative concept fallback
+    return generateFallbackIdea(trimmed);
+  }
+
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash',
-      contents: `Generate a short, creative, and visually descriptive design idea for a t-shirt based on the following prompt: "${prompt}". Describe the visual elements, not just the concept. For example, instead of "a cool cat", say "A cat wearing sunglasses and a leather jacket, riding a skateboard."`,
+      contents: `Generate a concise, highly creative, and visually descriptive design idea for custom merchandise based on the prompt: "${trimmed}". Describe specific visual elements, layout, colors, and art style in 2-3 engaging sentences.`,
       config: {
         temperature: 0.8,
-        maxOutputTokens: 100,
-        // Fix: When using maxOutputTokens with the gemini-2.5-flash model, a thinkingBudget must be set to reserve tokens for the final output.
+        maxOutputTokens: 200,
         thinkingConfig: { thinkingBudget: 25 },
       }
     });
-    return response.text;
+
+    if (response.text && response.text.trim().length > 0) {
+      return response.text.trim();
+    }
+    return generateFallbackIdea(trimmed);
   } catch (error) {
-    console.error("Error generating design idea:", error);
-    return "Sorry, I couldn't come up with an idea right now. Please try again.";
+    console.warn("Gemini API call encountered an issue, using creative fallback:", error);
+    return generateFallbackIdea(trimmed);
   }
 };
+

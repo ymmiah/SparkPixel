@@ -37,7 +37,7 @@ const HomePage: React.FC<HomePageProps> = ({ onNavigate }) => {
           High-quality custom printing for t-shirts, mugs, posters, and more. Create your unique products today with our easy-to-use design tools.
         </p>
         <div className="mt-8">
-          <Button size="lg" onClick={() => onNavigate('products', { category: 'print' })}>
+          <Button size="lg" onClick={() => onNavigate('products')}>
             Get Started Now
           </Button>
         </div>

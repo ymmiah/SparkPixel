@@ -97,6 +97,8 @@ let orders: Order[] = [
             product: products[1],
             design: { productId: 'mug-white', elements: [] },
             quantity: 1,
+            // FIX: Added missing previewImageUrl property.
+            previewImageUrl: products[1].imageUrl,
         }],
         total: 14.99,
         status: 'Delivered',

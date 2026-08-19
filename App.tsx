@@ -33,7 +33,7 @@ const App: React.FC = () => {
     navigate('design-studio');
   }, [navigate]);
   
-  const handleAddToCart = (designElements: DesignElement[]) => {
+  const handleAddToCart = (designElements: DesignElement[], previewImageUrl: string) => {
     if (!selectedProduct) return;
     
     const design: Design = {
@@ -44,7 +44,8 @@ const App: React.FC = () => {
     addToCart({
         product: selectedProduct,
         design: design,
-        quantity: 1 // Default quantity to 1
+        quantity: 1, // Default quantity to 1
+        previewImageUrl: previewImageUrl,
     });
     
     navigate('checkout');

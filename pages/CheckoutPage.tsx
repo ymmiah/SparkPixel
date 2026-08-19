@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Page } from '../types';
 import Button from '../components/Button';
-import { CheckCircleIcon, LockClosedIcon, LoaderIcon } from '../components/icons';
+import { CheckCircleIcon, LockClosedIcon, LoaderIcon, TrashIcon } from '../components/icons';
 import { useAppContext } from '../contexts/AppContext';
 
 interface CheckoutPageProps {
@@ -10,24 +10,27 @@ interface CheckoutPageProps {
 
 const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
-  const { cart, currentUser, placeOrder, isLoading } = useAppContext();
+  const { cart, currentUser, placeOrder, isLoading, removeFromCart, updateCartQuantity, login } = useAppContext();
 
   const subtotal = useMemo(() => {
     return cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
   }, [cart]);
 
-  const shipping = 5.00; // Mock shipping cost
-  const tax = subtotal * 0.08; // Mock tax rate
+  const shipping = cart.length > 0 ? 5.00 : 0;
+  const tax = subtotal * 0.08; // 8% tax
   const total = subtotal + shipping + tax;
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!currentUser) {
+      await login('user-1');
+    }
     const newOrder = await placeOrder();
     if (newOrder) {
       setIsOrderPlaced(true);
       window.scrollTo(0, 0);
     } else {
-        alert("Could not place order. Please make sure you are logged in and your cart is not empty.");
+      alert("Could not place order. Please make sure your cart is not empty.");
     }
   };
 
@@ -107,15 +110,42 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                 <h2 className="text-lg font-medium text-gray-900">Order summary</h2>
                 <ul className="divide-y divide-gray-200 mt-4">
                     {cart.map((item, index) => (
-                        <li key={index} className="flex py-4">
-                            <img src={item.product.imageUrl} alt={item.product.name} className="h-16 w-16 rounded-md object-cover" />
-                            <div className="ml-4 flex flex-1 flex-col">
-                                <div>
-                                    <div className="flex justify-between text-base font-medium text-gray-900">
-                                        <h3>{item.product.name}</h3>
-                                        <p className="ml-4">${item.product.price.toFixed(2)}</p>
-                                    </div>
-                                    <p className="mt-1 text-sm text-gray-500">Quantity: {item.quantity}</p>
+                        <li key={index} className="flex py-4 items-center gap-4">
+                            <img src={item.previewImageUrl} alt={item.product.name} className="h-16 w-16 rounded-md object-contain bg-gray-100 flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                                <div className="flex justify-between text-base font-medium text-gray-900">
+                                    <h3 className="truncate">{item.product.name}</h3>
+                                    <p className="ml-2 font-semibold">${(item.product.price * item.quantity).toFixed(2)}</p>
+                                </div>
+                                <div className="flex items-center justify-between mt-2">
+                                  <div className="flex items-center border border-gray-300 rounded">
+                                    <button
+                                      type="button"
+                                      onClick={() => updateCartQuantity(index, item.quantity - 1)}
+                                      className="px-2 py-0.5 text-gray-600 hover:bg-gray-100 text-sm font-bold"
+                                      aria-label="Decrease quantity"
+                                    >
+                                      -
+                                    </button>
+                                    <span className="px-2 text-sm text-gray-800 font-medium">{item.quantity}</span>
+                                    <button
+                                      type="button"
+                                      onClick={() => updateCartQuantity(index, item.quantity + 1)}
+                                      className="px-2 py-0.5 text-gray-600 hover:bg-gray-100 text-sm font-bold"
+                                      aria-label="Increase quantity"
+                                    >
+                                      +
+                                    </button>
+                                  </div>
+                                  <button
+                                    type="button"
+                                    onClick={() => removeFromCart(index)}
+                                    className="text-red-500 hover:text-red-700 p-1 transition-colors"
+                                    title="Remove item"
+                                    aria-label="Remove item"
+                                  >
+                                    <TrashIcon className="h-4 w-4" />
+                                  </button>
                                 </div>
                             </div>
                         </li>
@@ -131,7 +161,7 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                         <p>${shipping.toFixed(2)}</p>
                     </div>
                     <div className="flex justify-between text-sm text-gray-600">
-                        <p>Tax</p>
+                        <p>Tax (8%)</p>
                         <p>${tax.toFixed(2)}</p>
                     </div>
                     <div className="flex justify-between text-base font-medium text-gray-900 mt-2 pt-2 border-t">
@@ -147,27 +177,38 @@ const CheckoutPage: React.FC<CheckoutPageProps> = ({ onNavigate }) => {
                 <div className="mt-4 space-y-4">
                     <div>
                         <label htmlFor="card-number" className="block text-sm font-medium text-gray-700">Card number</label>
-                        <input type="text" id="card-number" placeholder="0000 0000 0000 0000" required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                        <input type="text" id="card-number" defaultValue="4532 •••• •••• 8894" required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border" />
                     </div>
                     <div className="flex gap-4">
                         <div className="flex-1">
                             <label htmlFor="expiration-date" className="block text-sm font-medium text-gray-700">Expiration (MM/YY)</label>
-                            <input type="text" id="expiration-date" placeholder="MM/YY" required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                            <input type="text" id="expiration-date" defaultValue="12/28" required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border" />
                         </div>
                         <div className="flex-1">
                             <label htmlFor="cvc" className="block text-sm font-medium text-gray-700">CVC</label>
-                            <input type="text" id="cvc" placeholder="123" required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" />
+                            <input type="text" id="cvc" defaultValue="382" required className="mt-1 block w-full border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm p-2 border" />
                         </div>
                     </div>
                 </div>
             </div>
 
              <div className="mt-6">
-                <Button type="submit" size="lg" fullWidth disabled={!currentUser || isLoading}>
+                {!currentUser && (
+                  <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-center justify-between text-xs text-amber-800">
+                    <span>You're checking out as a guest.</span>
+                    <button
+                      type="button"
+                      onClick={() => login('user-1')}
+                      className="font-semibold text-indigo-600 hover:underline"
+                    >
+                      Sign in as Alex Doe
+                    </button>
+                  </div>
+                )}
+                <Button type="submit" size="lg" fullWidth disabled={cart.length === 0 || isLoading}>
                      {isLoading ? <LoaderIcon className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" /> : <LockClosedIcon className="h-5 w-5 mr-2"/>}
-                     {isLoading ? 'Processing...' : `Pay $${total.toFixed(2)}`}
+                     {isLoading ? 'Processing Order...' : `Complete Order ($${total.toFixed(2)})`}
                 </Button>
-                {!currentUser && <p className="text-center text-sm text-red-600 mt-2">Please log in to place an order.</p>}
             </div>
           </div>
         </div>

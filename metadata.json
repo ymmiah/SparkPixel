@@ -1,5 +1,8 @@
 {
   "name": "Spark Pixel",
   "description": "A comprehensive web application for a printing business where users can upload or create designs for various products like t-shirts and mugs, customize them in a live preview, and place orders.",
-  "requestFramePermissions": []
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
 }

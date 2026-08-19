@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Page } from '../types';
-import { LogoIcon, UserIcon, MenuIcon, XIcon, ChevronDownIcon } from './icons';
+import { LogoIcon, UserIcon, MenuIcon, XIcon, ChevronDownIcon, ShoppingCartIcon } from './icons';
 import { useAppContext } from '../contexts/AppContext';
 import Button from './Button';
 
@@ -18,8 +18,10 @@ const productCategories = [
 const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductMenuOpen, setIsProductMenuOpen] = useState(false);
-  const { currentUser, login, logout } = useAppContext();
+  const { currentUser, login, logout, cart } = useAppContext();
   const productMenuRef = useRef<HTMLDivElement>(null);
+
+  const cartItemCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -47,7 +49,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
   };
 
   const ProductDropdown = () => (
-    <div className="absolute top-full right-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
+    <div className="absolute top-full left-0 mt-2 w-56 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 z-50">
         <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="options-menu">
             {productCategories.map(item => (
                  <button
@@ -85,14 +87,29 @@ const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
             </nav>
           </div>
           <div className="hidden md:block">
-            <div className="ml-4 flex items-center md:ml-6">
+            <div className="ml-4 flex items-center md:ml-6 gap-3">
+              {/* Cart Button */}
+              <button
+                onClick={() => onNavigate('checkout')}
+                className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors rounded-full hover:bg-gray-100"
+                title="View Cart"
+                aria-label={`Cart with ${cartItemCount} items`}
+              >
+                <ShoppingCartIcon className="h-6 w-6" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-indigo-600 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full shadow">
+                    {cartItemCount}
+                  </span>
+                )}
+              </button>
+
               {currentUser ? (
                 <>
-                  <span className="text-sm text-gray-600 mr-4">Welcome, {currentUser.name.split(' ')[0]}</span>
-                  <button onClick={() => onNavigate('profile')} className="p-1 rounded-full text-gray-400 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  <span className="text-sm text-gray-600">Welcome, {currentUser.name.split(' ')[0]}</span>
+                  <button onClick={() => onNavigate('profile')} className="p-1 rounded-full text-gray-400 hover:text-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" title="Profile">
                     <UserIcon className="h-6 w-6" />
                   </button>
-                   <Button variant="secondary" size="sm" onClick={handleLogout} className="ml-4">
+                   <Button variant="secondary" size="sm" onClick={handleLogout}>
                     Log Out
                   </Button>
                 </>
@@ -103,7 +120,21 @@ const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
               )}
             </div>
           </div>
-          <div className="-mr-2 flex md:hidden">
+          <div className="-mr-2 flex items-center gap-2 md:hidden">
+            {/* Mobile Cart Button */}
+            <button
+              onClick={() => onNavigate('checkout')}
+              className="relative p-2 text-gray-600 hover:text-indigo-600 transition-colors"
+              aria-label={`Cart with ${cartItemCount} items`}
+            >
+              <ShoppingCartIcon className="h-6 w-6" />
+              {cartItemCount > 0 && (
+                <span className="absolute top-0 right-0 bg-indigo-600 text-white text-xs font-bold w-4 h-4 flex items-center justify-center rounded-full text-[10px]">
+                  {cartItemCount}
+                </span>
+              )}
+            </button>
+
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="bg-white inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -116,7 +147,7 @@ const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
       </div>
 
       {isMenuOpen && (
-        <div className="md:hidden">
+        <div className="md:hidden border-b border-gray-200 bg-white">
           <div className="px-2 pt-2 pb-3 space-y-1 sm:px-3">
              <button onClick={() => { onNavigate('home'); setIsMenuOpen(false); }} className="w-full text-left text-gray-600 hover:text-indigo-600 block px-3 py-2 rounded-md text-base font-medium">Home</button>
              <div>
@@ -134,6 +165,10 @@ const Header: React.FC<HeaderProps> = ({ onNavigate }) => {
                     </div>
                 )}
              </div>
+             <button onClick={() => { onNavigate('checkout'); setIsMenuOpen(false); }} className="w-full text-left text-gray-600 hover:text-indigo-600 flex items-center justify-between px-3 py-2 rounded-md text-base font-medium">
+               <span>Cart & Checkout</span>
+               {cartItemCount > 0 && <span className="bg-indigo-100 text-indigo-800 text-xs px-2 py-0.5 rounded-full font-semibold">{cartItemCount} items</span>}
+             </button>
           </div>
           <div className="pt-4 pb-3 border-t border-gray-200">
             {currentUser ? (
