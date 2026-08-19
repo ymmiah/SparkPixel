@@ -1,0 +1,89 @@
+/* Spark Pixel Studio Global Styles */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+/* Studio Canvas Background Grid */
+.studio-canvas-grid {
+  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+}
+
+.studio-canvas-grid-dark {
+  background-size: 20px 20px;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+}
+
+/* Safe Print Guidelines */
+.safe-zone-guide {
+  border: 1px dashed rgba(59, 130, 246, 0.6);
+}
+
+.cut-line-guide {
+  border: 1px dashed rgba(239, 68, 68, 0.6);
+}
+
+.bleed-line-guide {
+  border: 1px dotted rgba(234, 179, 8, 0.6);
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Prevent image and canvas dragging glitches */
+.no-drag {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-select: none;
+}
+
+/* Pulse animation for AI assist */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+.shimmer-ai {
+  background: linear-gradient(90deg, #4f46e5 0%, #818cf8 50%, #4f46e5 100%);
+  background-size: 200% 100%;
+  animation: shimmer 2.5s infinite linear;
+}
+
+/* Perspective Mockup Transformations */
+.mockup-perspective-card {
+  transform: perspective(1000px) rotateX(10deg) rotateY(-15deg) rotateZ(3deg);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mockup-perspective-card:hover {
+  transform: perspective(1000px) rotateX(0deg) rotateY(0deg) rotateZ(0deg);
+}
+
+.mockup-shadow-lg {
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(0, 0, 0, 0.05);
+}

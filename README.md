@@ -1,111 +1,70 @@
-# Spark Pixel — Custom Printing & Live Design Studio
+# Spark Pixel Studio — Custom Print & Personalization Platform
 
-Spark Pixel is a modern, full-featured web application for on-demand custom printing and merchandise personalization. Users can select merchandise (apparel, mugs, homeware, posters), design custom artwork using an interactive multi-layer studio canvas, get AI-powered creative suggestions, preview their products in real time, and place orders.
-
----
-
-## ✨ Features
-
-- **🛍️ Product Catalog & Categorization**
-  - Explore apparel (T-shirts, hoodies, totes), drinkware (ceramic mugs, travel tumblers), and print products (posters, canvas prints).
-  - Filter products dynamically by category with responsive product cards and pricing details.
-
-- **🎨 Interactive Live Design Studio**
-  - Real-time product mockup canvas with designated printable zones.
-  - Add text with customizable fonts, colors, sizes, alignment, and letter tracking.
-  - Upload custom artwork, illustrations, or photos via drag-and-drop or file picker.
-  - Add vector shapes (circles, rectangles, accent lines) with custom stroke and fill colors.
-  - Multi-touch & pointer-enabled draggable, rotatable, and resizable design elements.
-  - Layer ordering (Bring Forward, Send Backward) and element deletion.
-
-- **💡 AI-Powered Creative Assistant**
-  - Integrated with the `@google/genai` SDK using Gemini models to generate descriptive merchandise concepts and visual layout ideas based on theme prompts.
-  - Safe lazy initialization and fallback design generator for instant creativity in all environments.
-
-- **🛒 Shopping Cart & Checkout**
-  - Persistent multi-item cart with live item count badge in the header.
-  - Adjustable item quantities and instant removal in the checkout summary.
-  - Automated canvas composite preview generation and export for accurate print rendering.
-  - Streamlined checkout flow with guest checkout support and demo account switching.
-
-- **👤 User Profile & Order Tracking**
-  - View order history with full itemized breakdowns, dates, statuses, and custom design thumbnails.
+Spark Pixel is a professional, full-featured web application offering a custom printing and merchandise personalization experience on par with platforms like **Vistaprint**. Users can browse an extensive catalog of business cards, marketing collateral, apparel, drinkware, and signage, customize designs with a multi-layer vector studio, generate AI copy with Gemini, preview 3D proofs with realistic paper finishes, and order with volume discounts.
 
 ---
 
-## 🛠️ Tech Stack
+## ✨ Key Features & Capabilities
 
-- **Framework**: React 19 + TypeScript
-- **Bundler & Dev Server**: Vite
-- **Styling**: Tailwind CSS
-- **AI Integration**: `@google/genai` SDK
-- **Icons**: Custom SVG icons with Lucide iconography patterns
+- **📇 Comprehensive Product Catalog & Options**
+  - **Business Cards**: Standard 16pt, Rounded Corners, Velvet Matte, Glossy UV, Metallic Foil, and Linen Textures.
+  - **Marketing Materials**: Full-Color Trifold Brochures, Postcards, Presentation Folders, and Rack Cards.
+  - **Apparel & Merch**: Heavyweight Cotton Tees, Hoodies, Canvas Tote Bags, and Embroidered Caps.
+  - **Drinkware & Homeware**: 11oz/15oz Ceramic Mugs, Stainless Steel Tumblers, and Coasters.
+  - **Signs & Banners**: Retractable Trade Show Banners, Vinyl Banners with Grommets, and Yard Signs.
+  - **Stickers & Decals**: Die-cut Waterproof Vinyl Stickers, Sheet Labels, and Clear Window Decals.
+  - **Tiered Volume Pricing**: Dynamic tier calculations offering up to 70% bulk discounts.
+
+- **🎨 Multi-Layer Interactive Design Studio**
+  - **Full-Bleed & Safe Margin Guides**: Real-world print guides, bleed margin warnings, and snap-to-center alignments.
+  - **Typography Suite**: Google Fonts library (Montserrat, Playfair Display, Space Grotesk, Oswald, Cinzel, Dancing Script, etc.) with custom weights, line heights, letter-spacing, and drop shadows.
+  - **Vector Shapes & Clipart**: Badges, ribbons, arrows, stars, geometric shapes with custom fills, borders, and rounded corners.
+  - **Dynamic QR Code Generator**: Deterministic vector QR matrix generator for URLs, WiFi, contact cards, and phone numbers.
+  - **Dual-Sided Editing**: Seamless front and back design switching with independent layer stacks.
+  - **Layer Ordering & Controls**: Bring to front, send to back, duplicate, lock, rotate, flip, and delete.
+
+- **💡 Gemini AI Marketing & Design Co-Pilot**
+  - Instant generation of industry-specific taglines, promotional slogans, contact bios, and value propositions.
+  - Intelligent starter layout suggestions directly placed onto the canvas.
+
+- **🖼️ Designer Templates Gallery**
+  - Over 100+ curated starter templates spanning Real Estate, Tech Startups, Artisan Cafes, Streetwear, and Corporate Events.
+  - 1-Click loading into the Design Studio.
+
+- **🔍 High-Fidelity 3D Proof Mockup Modal**
+  - Interactive 3D perspective viewer simulating paper stocks (Velvet Matte, Glossy UV, Metallic Foil, Natural Linen).
+  - Printable resolution proof approval with print specifications breakdown.
+
+- **🛒 Full E-Commerce Cart & Checkout**
+  - Custom finishing options selector (finishes, corners, sizes).
+  - Promo code discounts (e.g. `PRINTPRO` for 15% off).
+  - Standard vs. Express Rush delivery options.
+  - Confetti celebration upon order confirmation with digital receipt, order ID, and tracking code.
+
+- **👤 Account & Order Management**
+  - Profile hub with past order history, order statuses (In Production, Shipped, Delivered), item previews, and tracking codes.
 
 ---
 
-## 📁 Project Structure
+## 🛠️ Technology Stack
 
+- **Frontend**: React 19, TypeScript, Vite
+- **Styling**: Tailwind CSS, Google Fonts
+- **Canvas & Graphics**: HTML5 Canvas API, SVG Vector Matrix
+- **AI Intelligence**: `@google/genai` Gemini SDK
+- **Animation & Effects**: `canvas-confetti`, CSS 3D Perspective Transforms
+
+---
+
+## 🚀 Running the Project
+
+```bash
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+
+# Build production bundle
+npm run build
 ```
-├── App.tsx                     # Main application container & view routing
-├── index.html                  # HTML entry point
-├── index.tsx                   # React root mount
-├── metadata.json               # Application metadata and capabilities
-├── package.json                # Project dependencies and scripts
-├── types.ts                    # TypeScript data models and interfaces
-├── vite.config.ts              # Vite build configuration
-├── components/
-│   ├── Button.tsx              # Reusable button component
-│   ├── Footer.tsx              # Application footer
-│   ├── Header.tsx              # Navigation bar with cart badge and user menu
-│   ├── ProductCard.tsx         # Product display card
-│   └── icons.tsx               # Vector icon components
-├── contexts/
-│   └── AppContext.tsx          # Global application state (cart, user, orders)
-├── database/
-│   └── mockDatabase.ts         # Mock product catalog, users, and order repository
-├── pages/
-│   ├── CheckoutPage.tsx        # Cart summary, shipping, payment, and order confirmation
-│   ├── DesignStudioPage.tsx    # Interactive canvas editor with AI ideation & tools
-│   ├── HomePage.tsx            # Landing page with hero banner & feature overview
-│   ├── ProductSelectionPage.tsx# Filterable product grid
-│   └── ProfilePage.tsx         # User profile and order history
-└── services/
-    └── geminiService.ts        # Gemini API integration and creative generator
-```
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-- Node.js 18+
-- npm or yarn
-
-### Installation
-1. Clone the repository or navigate to the project directory:
-   ```bash
-   npm install
-   ```
-
-2. (Optional) Set up your Gemini API key:
-   Create a `.env.local` file in the root directory:
-   ```env
-   GEMINI_API_KEY=your_gemini_api_key_here
-   ```
-
-3. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-4. Build for production:
-   ```bash
-   npm run build
-   ```
-
----
-
-## 🔒 Security & AI Configuration
-
-- The app uses lazy initialization for AI services to prevent startup crashes when keys are omitted.
-- `metadata.json` is configured with `MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API`.
